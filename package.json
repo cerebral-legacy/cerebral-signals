@@ -1,0 +1,31 @@
+{
+  "name": "cerebral-signal",
+  "version": "0.1.0",
+  "description": "signal implementation of Cerebral",
+  "main": "index.js",
+  "dependencies": {
+    "action-tree": "^0.0.1"
+  },
+  "devDependencies": {
+    "nodeunit": "^0.9.1"
+  },
+  "scripts": {
+    "test": "nodeunit tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cerebral/cerebral-signal.git"
+  },
+  "keywords": [
+    "cerebral",
+    "javascript",
+    "flow",
+    "async"
+  ],
+  "author": "Christian Alfoni",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cerebral/cerebral-signal/issues"
+  },
+  "homepage": "https://github.com/cerebral/cerebral-signal#readme"
+}
