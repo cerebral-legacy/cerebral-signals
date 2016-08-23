@@ -1,10 +1,10 @@
 {
   "name": "cerebral-signals",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "signals implementation of Cerebral",
   "main": "index.js",
   "dependencies": {
-    "action-tree": "^0.0.1"
+    "action-tree": "^0.1.0"
   },
   "devDependencies": {
     "nodeunit": "^0.9.1"

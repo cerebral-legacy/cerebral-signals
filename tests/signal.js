@@ -35,7 +35,7 @@ module.exports['should pass arguments to context creator and run it for each act
   const Signal = CerebralSignal([
     function ContextProvider(context, action, payload, next) {
       test.deepEqual(context, {})
-      test.equal(action.name, 'action')
+      test.equal(action.actionIndex, 0)
       test.deepEqual(payload, {foo: 'bar'})
       test.ok(typeof next, 'function')
     }
@@ -133,11 +133,11 @@ module.exports['should pass action and payload on action events'] = (test) => {
 
   test.expect(4)
   signal.once('actionStart', function(action, payload) {
-    test.equal(action.name, 'action')
+    test.equal(action.actionIndex, 0)
     test.deepEqual(payload, {foo: 'bar'})
   })
   signal.once('actionEnd', function(action, payload) {
-    test.equal(action.name, 'action')
+    test.equal(action.actionIndex, 0)
     test.deepEqual(payload, {foo: 'bar'})
   })
   signal({
