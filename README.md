@@ -1,4 +1,4 @@
-# cerebral-signal
+# cerebral-signals
 A mixed synchronous and asynchronous flow control tool
 
 ### Creating a custom signal
