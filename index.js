@@ -3,10 +3,10 @@
 const ActionTree = require('action-tree')
 const EventEmitter = require('events')
 
-function Signal(contextProviders) {
+function SignalInstance(chain, contextProviders) {
   this.contextProviders = contextProviders
+  this.staticTree = ActionTree.staticTree(chain.slice())
 
-  this.create = this.create.bind(this)
   this.runChain = this.runChain.bind(this)
   this.runAction = this.runAction.bind(this)
 
@@ -15,28 +15,17 @@ function Signal(contextProviders) {
   this.runChain.off = this.removeListener.bind(this)
 }
 
-Signal.prototype = Object.create(EventEmitter.prototype)
+SignalInstance.prototype = Object.create(EventEmitter.prototype)
 
-Signal.prototype.create = function(chain) {
-  if (chain && !Array.isArray(chain)) {
-    throw new Error('Cerebral Signal - The chain ' + JSON.stringify(chain) + ' is not a valid chain, it has to be an array')
-  }
-
-  this.staticTree = ActionTree.staticTree(chain)
-
-  return this.runChain
-}
-
-Signal.prototype.runChain = function(payload) {
+SignalInstance.prototype.runChain = function(payload) {
 
   this.emit('signalStart')
-
   ActionTree.executeTree(this.staticTree.tree, this.runAction, payload, function() {
     this.emit('signalEnd')
   }.bind(this))
 }
 
-Signal.prototype.runAction = function(action, payload, next) {
+SignalInstance.prototype.runAction = function(action, payload, next) {
 
   let hasRunNext = false
 
@@ -61,13 +50,15 @@ Signal.prototype.runAction = function(action, payload, next) {
   }
 }
 
-Signal.prototype.createContext = function(action, payload, next) {
+SignalInstance.prototype.createContext = function(action, payload, next) {
   return this.contextProviders.reduce(function(currentContext, contextProvider) {
     return contextProvider(currentContext, action, payload, next)
   }, {})
 }
 
 module.exports = function(contextProviders) {
-  const signal = new Signal(contextProviders)
-  return signal.create
+  return function (chain) {
+    const signal = new SignalInstance(chain, contextProviders)
+    return signal.runChain
+  }
 }
