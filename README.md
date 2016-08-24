@@ -18,51 +18,6 @@ const signal = MySignal([
 
 ### Included context providers
 
-#### Next
-You need a context provider to progress the signal. This is a simple
-"middleware" like implementation of next.
-
-```js
-const CerebralSignal = require('cerebral-signals')
-const NextProvider = require('cerebral-signals/providers/Next')
-
-const MySignal = CerebralSignal([
-  NextProvider()
-])
-
-function actionA(context) {
-  // Trigger next action, actionB with a payload
-  context.next({
-    foo: 'bar'
-  })
-}
-
-function actionB(context) {
-  // If InputProvider was available the updated
-  // (merged) payload would be available on "input"
-
-  // Goes down to actionC, second argument would be payload
-  context.next('alt1')
-}
-
-function actionC(context) {
-  // Ends signal, emits "signalEnd" event
-  context.next()
-}
-
-const signal = MySignal([
-  actionA,
-  actionB, {
-    alt1: [
-      actionC
-    ],
-    alt2: []
-  }
-])
-
-signal()
-```
-
 #### Input
 Any payload passed into signal or updated using "next" will be available
 on the context as "input".
@@ -86,4 +41,44 @@ const signal = MySignal([
 signal({
   foo: 'bar'
 })
+```
+
+#### Output
+Actions without any output will progress automatically. If you want to go down a specific path, pass payload and/or run async, you need an output to do that.
+
+```js
+const CerebralSignal = require('cerebral-signals')
+const OutputProvivder = require('cerebral-signals/providers/Output')
+
+const MySignal = CerebralSignal([
+  OutputProvivder()
+])
+
+function actionA(context) {
+  // Trigger next action manually with a payload
+  context.output({
+    foo: 'bar'
+  })
+}
+
+function actionB(context) {
+  // If InputProvider was available the updated
+  // (merged) payload would be available on "input"
+
+  // Goes down to actionC, argument would be a payload.
+  // This is run async, which is why the action is marked
+  // as async as well
+  setTimeout(() => context.output.alt1())
+}
+actionB.async = true
+
+const signal = MySignal([
+  actionA,
+  actionB, {
+    alt1: [],
+    alt2: []
+  }
+])
+
+signal()
 ```

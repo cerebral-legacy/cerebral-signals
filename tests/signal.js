@@ -72,20 +72,10 @@ module.exports['should pass returned context into actions'] = (test) => {
 
 module.exports['should emit execution events in correct order'] = (test) => {
   let eventsCount = 0
-  const Signal = CerebralSignal([
-    function Next(context, action, payload, next) {
-      return {
-        next: next
-      }
-    }
-  ])
+  const Signal = CerebralSignal([])
   const signal = Signal([
-    function actionA(context) {
-      context.next()
-    },
-    function actionB(context) {
-      context.next()
-    }
+    function actionA() {},
+    function actionB() {}
   ])
 
   test.expect(6)
@@ -118,17 +108,9 @@ module.exports['should emit execution events in correct order'] = (test) => {
 }
 
 module.exports['should pass action and payload on action events'] = (test) => {
-  const Signal = CerebralSignal([
-    function Next(context, action, payload, next) {
-      return {
-        next: next
-      }
-    }
-  ])
+  const Signal = CerebralSignal([])
   const signal = Signal([
-    function action(context) {
-      context.next()
-    }
+    function action() {}
   ])
 
   test.expect(4)

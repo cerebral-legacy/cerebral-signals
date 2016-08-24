@@ -1,3 +1,5 @@
+'use strict';
+
 const ActionTree = require('action-tree')
 const EventEmitter = require('events')
 
@@ -36,21 +38,27 @@ Signal.prototype.runChain = function(payload) {
 
 Signal.prototype.runAction = function(action, payload, next) {
 
+  let hasRunNext = false
+
   // We wrap next becase we want to emit an event
   // when the action is done
   const wrappedNext = function() {
+    if (hasRunNext) {
+      throw new Error('cerebral-signals: You ran an output twice in an action, maybe you forgot to set it as async?')
+    }
+    hasRunNext = true
     this.emit('actionEnd', action, payload)
     next.apply(null, arguments)
   }.bind(this)
 
-
   const context = this.createContext(action, payload, wrappedNext)
 
-  // The action function itself is in the static tree
-  const actionFunc = this.staticTree.actions[action.actionIndex]
-
   this.emit('actionStart', action, payload)
-  actionFunc(context)
+  action.actionFunc(context)
+
+  if (!action.isAsync && !hasRunNext) {
+    wrappedNext()
+  }
 }
 
 Signal.prototype.createContext = function(action, payload, next) {
