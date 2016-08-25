@@ -127,3 +127,56 @@ module.exports['should pass action and payload on action events'] = (test) => {
   })
   test.done()
 }
+
+module.exports['should be able to reuse existing chain to define signals'] = (test) => {
+  const Signal = CerebralSignal([
+    function NextProvider(context, action, payload, next) {
+      context.next = next
+
+      return context
+    }
+  ])
+
+  function actionA(context) {
+    test.ok(true)
+    context.next({
+      path: 'success'
+    })
+  }
+  actionA.async = true
+
+  function actionB(context) {
+    test.ok(true)
+    context.next({
+      path: 'success'
+    })
+  }
+
+  function actionC(context) {
+    test.ok(true)
+    context.next()
+  }
+
+  const chain = [
+    actionA, {
+      success: [
+        actionB, {
+          success: [
+            actionC
+          ]
+        }
+      ]
+    }
+  ]
+  const signalA = Signal(chain)
+  signalA.on('signalEnd', () => {
+    const signalB = Signal(chain)
+    signalB.on('signalEnd', () => {
+      test.done()
+    })
+    signalB()
+  })
+
+  test.expect(6)
+  signalA()
+}

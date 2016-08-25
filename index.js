@@ -5,7 +5,7 @@ const EventEmitter = require('events')
 
 function SignalInstance(chain, contextProviders) {
   this.contextProviders = contextProviders
-  this.staticTree = ActionTree.staticTree(chain.slice())
+  this.staticTree = ActionTree.staticTree(chain)
 
   this.runChain = this.runChain.bind(this)
   this.runAction = this.runAction.bind(this)
